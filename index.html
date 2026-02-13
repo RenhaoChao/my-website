@@ -3,13 +3,35 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gender Reveal! 寶寶性別大揭曉</title>
+    <title>性別揭曉刮刮樂</title>
+    
+    <meta property="og:title" content="神祕驚喜！快來刮開它">
+    <meta property="og:description" content="點開連結，親手刮開寶寶的小祕密吧！">
+    <meta property="og:type" content="website">
+    <meta property="og:image" content="https://images.unsplash.com/photo-1513151233558-d860c5398176?q=80&w=1000&auto=format&fit=crop">
+
     <style>
         body { text-align: center; font-family: sans-serif; background: #fdf6f6; }
         .container { position: relative; width: 300px; height: 300px; margin: 50px auto; border: 10px solid #fff; border-radius: 20px; box-shadow: 0 0 20px rgba(0,0,0,0.1); }
-        #result { position: absolute; width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #e3f2fd; border-radius: 10px; }
-        #result h1 { color: #1976d2; font-size: 2.5rem; margin: 0; }
+        
+        /* 這裡已將底色改為灰色 #f0f0f0 */
+        #result { 
+            position: absolute; 
+            width: 100%; 
+            height: 100%; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            justify-content: center; 
+            background: #f0f0f0; 
+            border-radius: 10px; 
+        }
+        
+        /* 配合灰底調整文字顏色 */
+        #result h1 { color: #333; font-size: 2.5rem; margin: 0; }
+        #result p { color: #666; font-weight: bold; margin-top: 5px; }
         #result .icon { font-size: 5rem; }
+        
         #scratch { position: absolute; top: 0; left: 0; cursor: crosshair; touch-action: none; border-radius: 10px; }
         .hint { color: #888; margin-top: 20px; }
     </style>
@@ -31,19 +53,23 @@
         const ctx = canvas.getContext('2d');
         let isDrawing = false;
 
-        // 繪製灰色塗層
+        // 繪製灰色塗層 (遮蓋用的銀灰色)
         ctx.fillStyle = '#C0C0C0';
         ctx.fillRect(0, 0, 300, 300);
-        ctx.fillStyle = '#999';
-        ctx.font = '24px Arial';
+        ctx.fillStyle = '#666';
+        ctx.font = 'bold 24px Arial';
         ctx.textAlign = 'center';
         ctx.fillText('SCRATCH ME', 150, 160);
 
         function scratch(e) {
             if (!isDrawing) return;
             const rect = canvas.getBoundingClientRect();
-            const x = (e.clientX || e.touches[0].clientX) - rect.left;
-            const y = (e.clientY || e.touches[0].clientY) - rect.top;
+            // 支援手機與電腦的座標計算
+            const clientX = e.clientX || (e.touches && e.touches[0].clientX);
+            const clientY = e.clientY || (e.touches && e.touches[0].clientY);
+            
+            const x = clientX - rect.left;
+            const y = clientY - rect.top;
             
             ctx.globalCompositeOperation = 'destination-out';
             ctx.beginPath();
@@ -52,11 +78,11 @@
         }
 
         canvas.addEventListener('mousedown', () => isDrawing = true);
-        canvas.addEventListener('touchstart', () => isDrawing = true);
+        canvas.addEventListener('touchstart', (e) => { isDrawing = true; e.preventDefault(); }, {passive: false});
         window.addEventListener('mouseup', () => isDrawing = false);
         window.addEventListener('touchend', () => isDrawing = false);
         canvas.addEventListener('mousemove', scratch);
-        canvas.addEventListener('touchmove', scratch);
+        canvas.addEventListener('touchmove', (e) => { scratch(e); e.preventDefault(); }, {passive: false});
     </script>
 </body>
 </html>

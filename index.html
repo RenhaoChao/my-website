@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gender Reveal! 寶寶性別大揭曉</title>
+    <style>
+        body { text-align: center; font-family: sans-serif; background: #fdf6f6; }
+        .container { position: relative; width: 300px; height: 300px; margin: 50px auto; border: 10px solid #fff; border-radius: 20px; box-shadow: 0 0 20px rgba(0,0,0,0.1); }
+        #result { position: absolute; width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #e3f2fd; border-radius: 10px; }
+        #result h1 { color: #1976d2; font-size: 2.5rem; margin: 0; }
+        #result .icon { font-size: 5rem; }
+        #scratch { position: absolute; top: 0; left: 0; cursor: crosshair; touch-action: none; border-radius: 10px; }
+        .hint { color: #888; margin-top: 20px; }
+    </style>
+</head>
+<body>
+    <h2>快來刮刮看，寶寶是...?</h2>
+    <div class="container">
+        <div id="result">
+            <div class="icon">👶‍♂️</div>
+            <h1>是男寶寶！</h1>
+            <p>IT'S A BOY</p>
+        </div>
+        <canvas id="scratch" width="300" height="300"></canvas>
+    </div>
+    <p class="hint">請在灰色方塊上滑動刮開</p>
+
+    <script>
+        const canvas = document.getElementById('scratch');
+        const ctx = canvas.getContext('2d');
+        let isDrawing = false;
+
+        // 繪製灰色塗層
+        ctx.fillStyle = '#C0C0C0';
+        ctx.fillRect(0, 0, 300, 300);
+        ctx.fillStyle = '#999';
+        ctx.font = '24px Arial';
+        ctx.textAlign = 'center';
+        ctx.fillText('SCRATCH ME', 150, 160);
+
+        function scratch(e) {
+            if (!isDrawing) return;
+            const rect = canvas.getBoundingClientRect();
+            const x = (e.clientX || e.touches[0].clientX) - rect.left;
+            const y = (e.clientY || e.touches[0].clientY) - rect.top;
+            
+            ctx.globalCompositeOperation = 'destination-out';
+            ctx.beginPath();
+            ctx.arc(x, y, 25, 0, Math.PI * 2);
+            ctx.fill();
+        }
+
+        canvas.addEventListener('mousedown', () => isDrawing = true);
+        canvas.addEventListener('touchstart', () => isDrawing = true);
+        window.addEventListener('mouseup', () => isDrawing = false);
+        window.addEventListener('touchend', () => isDrawing = false);
+        canvas.addEventListener('mousemove', scratch);
+        canvas.addEventListener('touchmove', scratch);
+    </script>
+</body>
+</html>
